@@ -23,8 +23,8 @@ class TcpServer extends Actor with ActorLogging {
 
     case Connected(remote, _) =>
       log.debug(s"New connection accepted for ${remote.getAddress}:${remote.getPort}")
-      val handler = context.actorOf(Props[SimplisticHandler])
       val connection = sender()
+      val handler = CommandHandler.actorOf(connection)(context)
       connection ! Register(handler)
     case unhandled =>
       log.error(s"Unhandled message received: $unhandled")
