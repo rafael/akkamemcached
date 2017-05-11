@@ -1,6 +1,7 @@
 package org.memcached.types.protocol
 
 import akka.util.ByteString
+import org.memcached.utils.BinaryProtocolHelpers._
 
 /**
   * Created by rafael on 5/10/17.
@@ -21,25 +22,57 @@ case class RequestHeader(
                           keyLength: Int,
                           extrasLength: Int,
                           reserved: Int,
-                          totalBodyLength: Int,
+                          totalBodyLength: Long,
                           opaque: Long,
                           cas: Long
                         ) {
   // Per protocol version definition for RequestPacket header
   val magic =  RequestPacketMagic
+  val dataType = 0
+
+  /**
+    *
+    * Byte/     0       |       1       |       2       |       3       |
+    *    /              |               |               |               |
+    *   |0 1 2 3 4 5 6 7|0 1 2 3 4 5 6 7|0 1 2 3 4 5 6 7|0 1 2 3 4 5 6 7|
+    *   +---------------+---------------+---------------+---------------+
+    *  0| Magic         | Opcode        | Key length                    |
+    *   +---------------+---------------+---------------+---------------+
+    *  4| Extras length | Data type     | Reserved                      |
+    *   +---------------+---------------+---------------+---------------+
+    *  8| Total body length                                             |
+    *   +---------------+---------------+---------------+---------------+
+    * 12| Opaque                                                        |
+    *   +---------------+---------------+---------------+---------------+
+    * 16| CAS                                                           |
+    *   |                                                               |
+    *   +---------------+---------------+---------------+---------------+
+    *
+    *  @return ByteString representation of the RequestHeader packet
+   */
+  def toByteString:ByteString = {
+    longToByteString(magic.code,     1) ++
+    longToByteString(opcode.code,    1) ++
+    longToByteString(keyLength,      2) ++
+    longToByteString(extrasLength,   1) ++
+    longToByteString(dataType,       1) ++
+    longToByteString(reserved,       2) ++
+    longToByteString(totalBodyLength,4) ++
+    longToByteString(opaque,         4) ++
+    longToByteString(cas,            4)
+  }
 }
 
 object RequestHeader {
-  import org.memcached.utils.BinaryProtocolHelpers._
   def apply(data: ByteString):Option[RequestHeader] = {
-    val magicOpt: Option[MagicValue] = MagicValue(readLong(data.slice(0,1)).toInt)
-    val opcodeOpt: Option[Opcode] = Opcode(readLong(data.slice(1,2)).toInt)
-    val keyLength: Int = readLong(data.slice(2,4)).toInt
-    val extrasLength: Int = readLong(data.slice(4,5)).toInt
-    val reserved: Int = readLong(data.slice(6,8)).toInt
-    val totalBodyLength: Int = readLong(data.slice(8,12)).toInt
-    val opaque: Long = readLong(data.slice(12,16))
-    val cas: Long = readLong(data.slice(12,16))
+    val magicOpt: Option[MagicValue] = MagicValue(byteStringToLong(data.slice(0,1)).toInt)
+    val opcodeOpt: Option[Opcode] = Opcode(byteStringToLong(data.slice(1,2)).toInt)
+    val keyLength: Int = byteStringToLong(data.slice(2,4)).toInt
+    val extrasLength: Int = byteStringToLong(data.slice(4,5)).toInt
+    val reserved: Int = byteStringToLong(data.slice(6,8)).toInt
+    val totalBodyLength: Long = byteStringToLong(data.slice(8,12))
+    val opaque: Long = byteStringToLong(data.slice(12,16))
+    val cas: Long = byteStringToLong(data.slice(16,20))
     for {
       magic <- magicOpt
       opcode <- opcodeOpt
