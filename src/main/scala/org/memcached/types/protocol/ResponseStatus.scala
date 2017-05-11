@@ -1,4 +1,4 @@
-package org.memcached.types
+package org.memcached.types.protocol
 
 /**
   * Created by rafael on 5/9/17.
@@ -44,11 +44,11 @@ case object IncrDecr extends  ResponseStatus {
 
 //0x0081  Unknown command
 case object UnknownCommand extends  ResponseStatus {
-  override val code = 0x0081
+  override val code = 0x81
 }
 
 //0x0082  Out of memory
 case object OutOfMemory extends  ResponseStatus {
-  override val code = 0x0082
+  override val code = 0x82
 }
 

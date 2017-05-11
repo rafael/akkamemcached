@@ -1,4 +1,4 @@
-package org.memcached.types
+package org.memcached.types.protocol
 
 /**
   * Created by rafael on 5/9/17.
@@ -141,6 +141,40 @@ case object AppendQ extends Opcode {
 //0x1A    PrependQ
 case object PrependQ extends Opcode {
   override val code = 0x1A
+}
+
+object Opcode {
+  def apply(value: Int):Option[Opcode] =
+    value match {
+      case Get.code => Some(Get)
+      case Set.code => Some(Set)
+      case Add.code => Some(Add)
+      case Replace.code => Some(Replace)
+      case Delete.code  => Some(Delete)
+      case Increment.code => Some(Increment)
+      case Decrement.code  => Some(Decrement)
+      case Quit.code => Some(Quit)
+      case Flush.code => Some(Flush)
+      case GetQ.code  => Some(GetQ)
+      case Noop.code => Some(Noop)
+      case Version.code => Some(Version)
+      case GetK.code => Some(GetK)
+      case GetKQ.code => Some(GetKQ)
+      case Append.code => Some(Append)
+      case Prepend.code => Some(Prepend)
+      case Stat.code => Some(Stat)
+      case SetQ.code => Some(SetQ)
+      case AddQ.code  => Some(AddQ)
+      case ReplaceQ.code => Some(ReplaceQ)
+      case DeleteQ.code  => Some(DeleteQ)
+      case IncrementQ.code => Some(IncrementQ)
+      case DecrementQ.code => Some(DecrementQ)
+      case QuitQ.code => Some(QuitQ)
+      case FlushQ.code => Some(FlushQ)
+      case AppendQ.code => Some(AppendQ)
+      case PrependQ.code => Some(PrependQ)
+      case _ => None
+    }
 }
 
 
