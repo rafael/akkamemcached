@@ -4,7 +4,7 @@ Akka Memcached Slack Interview
 
 # General Design
 
-
+```
 
                                            +--------------------+                                              +--------------------+
                                            | Command Handler 1  +------+                                       | LRU Cache          |
@@ -21,3 +21,5 @@ Akka Memcached Slack Interview
                                            +--------------------+                                              | +----------------+ |
                                                                                                                |                    |
                                                                                                                +--------------------+
+
+```
