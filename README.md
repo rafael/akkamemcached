@@ -68,4 +68,15 @@ The [binary protocol](https://cloud.github.com/downloads/memcached/memcached/pro
 
 In the current implementation the following fields of the protocol are ignored: **Expiration, Opaque and flags.**
 
-### Potential Drawbacks 
+## Discussion
+
+### Monitoring 
+
+* The system already provides the following metrics using statsd: Transactions Per Second, Memory Used by the Cached, Clients Connected. This metrics should be visiualized with tools like grafana.
+* On top of these metrics, we should collect system metrics and keep a very close eye in the following: 
+    * TCP connections opened at the OS level: If th 
+    * Network IO: This could be one of the most important metrics that will tell us that we are saturating the server. 
+    * CPU Usage: This just for reference, but CPU shouldn't be over utilized in this system
+    
+### Limitations
+* There is no concept of backpressure at the moment:  
