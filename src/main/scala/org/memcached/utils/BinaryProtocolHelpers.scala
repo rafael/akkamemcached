@@ -21,7 +21,12 @@ object BinaryProtocolHelpers {
     cas = 0
   ).toByteString ++ ByteString("1.3.1".getBytes())
 
-  def buildGetRequestResponse(opaque: Long, payload: ByteString): ByteString =
+  def buildErrorResponse(status: ResponseStatus, opcode: Opcode): ByteString = {
+    val msgBytes = ByteString(status.msg.getBytes)
+    ResponseHeader(opcode, 0, 0, status, msgBytes.size, 0, 0).toByteString ++ msgBytes
+  }
+
+  def buildGetRequestResponse(opaque: Long, payload: ByteString, cas: Long): ByteString =
     ResponseHeader(
       opcode = Get,
       keyLength = 0,
@@ -29,7 +34,7 @@ object BinaryProtocolHelpers {
       status = NoError,
       totalBodyLength  = payload.size + 4,
       opaque = opaque,
-      cas = 0
+      cas = cas
     ).toByteString ++ ByteString(Array(0xde.toByte,0xad.toByte,0xbe.toByte, 0xef.toByte)) ++ payload
 
   def parseServerCmd(request: RequestHeader, payload: ByteString): Try[ServerCmd] = {
