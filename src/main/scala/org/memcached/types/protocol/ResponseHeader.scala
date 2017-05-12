@@ -60,6 +60,6 @@ case class ResponseHeader(
     longToByteString(status.code,    2) ++
     longToByteString(totalBodyLength,4) ++
     longToByteString(opaque,         4) ++
-    longToByteString(cas,            4)
+    longToByteString(cas,            8)
   }
 }

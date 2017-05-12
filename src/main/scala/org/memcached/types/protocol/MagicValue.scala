@@ -1,5 +1,7 @@
 package org.memcached.types.protocol
 
+import scala.util.{Success, Try, Failure}
+
 /**
   * Created by rafael on 5/9/17.
   */
@@ -17,13 +19,13 @@ case object RequestPacketMagic extends  MagicValue {
 }
 
 object MagicValue {
-  def apply(magicValue: Int): Option[MagicValue] = {
+  def apply(magicValue: Int): Try[MagicValue] = {
     if (magicValue == RequestPacketMagic.code)
-      Some(RequestPacketMagic)
+      Success(RequestPacketMagic)
     else if (magicValue == ResponsePacketMagic.code)
-      Some(ResponsePacketMagic)
+      Success(ResponsePacketMagic)
     else
-      None
+      Failure(new RuntimeException(s"Invalid magic value:  $magicValue"))
   }
 }
 

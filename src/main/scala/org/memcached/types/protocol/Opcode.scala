@@ -1,5 +1,7 @@
 package org.memcached.types.protocol
 
+import scala.util.{Failure, Success, Try}
+
 /**
   * Created by rafael on 5/9/17.
   */
@@ -144,36 +146,36 @@ case object PrependQ extends Opcode {
 }
 
 object Opcode {
-  def apply(value: Int):Option[Opcode] =
+  def apply(value: Int):Try[Opcode] =
     value match {
-      case Get.code => Some(Get)
-      case Set.code => Some(Set)
-      case Add.code => Some(Add)
-      case Replace.code => Some(Replace)
-      case Delete.code  => Some(Delete)
-      case Increment.code => Some(Increment)
-      case Decrement.code  => Some(Decrement)
-      case Quit.code => Some(Quit)
-      case Flush.code => Some(Flush)
-      case GetQ.code  => Some(GetQ)
-      case Noop.code => Some(Noop)
-      case Version.code => Some(Version)
-      case GetK.code => Some(GetK)
-      case GetKQ.code => Some(GetKQ)
-      case Append.code => Some(Append)
-      case Prepend.code => Some(Prepend)
-      case Stat.code => Some(Stat)
-      case SetQ.code => Some(SetQ)
-      case AddQ.code  => Some(AddQ)
-      case ReplaceQ.code => Some(ReplaceQ)
-      case DeleteQ.code  => Some(DeleteQ)
-      case IncrementQ.code => Some(IncrementQ)
-      case DecrementQ.code => Some(DecrementQ)
-      case QuitQ.code => Some(QuitQ)
-      case FlushQ.code => Some(FlushQ)
-      case AppendQ.code => Some(AppendQ)
-      case PrependQ.code => Some(PrependQ)
-      case _ => None
+      case Get.code => Success(Get)
+      case Set.code => Success(Set)
+      case Add.code => Success(Add)
+      case Replace.code => Success(Replace)
+      case Delete.code  => Success(Delete)
+      case Increment.code => Success(Increment)
+      case Decrement.code  => Success(Decrement)
+      case Quit.code => Success(Quit)
+      case Flush.code => Success(Flush)
+      case GetQ.code  => Success(GetQ)
+      case Noop.code => Success(Noop)
+      case Version.code => Success(Version)
+      case GetK.code => Success(GetK)
+      case GetKQ.code => Success(GetKQ)
+      case Append.code => Success(Append)
+      case Prepend.code => Success(Prepend)
+      case Stat.code => Success(Stat)
+      case SetQ.code => Success(SetQ)
+      case AddQ.code  => Success(AddQ)
+      case ReplaceQ.code => Success(ReplaceQ)
+      case DeleteQ.code  => Success(DeleteQ)
+      case IncrementQ.code => Success(IncrementQ)
+      case DecrementQ.code => Success(DecrementQ)
+      case QuitQ.code => Success(QuitQ)
+      case FlushQ.code => Success(FlushQ)
+      case AppendQ.code => Success(AppendQ)
+      case PrependQ.code => Success(PrependQ)
+      case _ => Failure(new RuntimeException(s"Invalid command: $value"))
     }
 }
 

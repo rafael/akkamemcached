@@ -3,6 +3,8 @@ package org.memcached.types.protocol
 import akka.util.ByteString
 import org.memcached.utils.BinaryProtocolHelpers._
 
+import scala.util.Try
+
 /**
   * Created by rafael on 5/10/17.
   */
@@ -64,18 +66,18 @@ case class RequestHeader(
 }
 
 object RequestHeader {
-  def apply(data: ByteString):Option[RequestHeader] = {
-    val magicOpt: Option[MagicValue] = MagicValue(byteStringToLong(data.slice(0,1)).toInt)
-    val opcodeOpt: Option[Opcode] = Opcode(byteStringToLong(data.slice(1,2)).toInt)
+  def apply(data: ByteString):Try[RequestHeader] = {
+    val magicTry: Try[MagicValue] = MagicValue(byteStringToLong(data.slice(0,1)).toInt)
+    val opcodeTry: Try[Opcode] = Opcode(byteStringToLong(data.slice(1,2)).toInt)
     val keyLength: Int = byteStringToLong(data.slice(2,4)).toInt
     val extrasLength: Int = byteStringToLong(data.slice(4,5)).toInt
     val reserved: Int = byteStringToLong(data.slice(6,8)).toInt
     val totalBodyLength: Long = byteStringToLong(data.slice(8,12))
     val opaque: Long = byteStringToLong(data.slice(12,16))
-    val cas: Long = byteStringToLong(data.slice(16,20))
+    val cas: Long = byteStringToLong(data.slice(16,24))
     for {
-      magic <- magicOpt
-      opcode <- opcodeOpt
+      magic <- magicTry
+      opcode <- opcodeTry
       if magic == RequestPacketMagic
     } yield
       RequestHeader(

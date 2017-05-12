@@ -9,8 +9,10 @@ import akka.util.ByteString
 trait ServerCmd
 
 
-case class SetCmd(key: String, payload: ByteString, expiresAt: Option[Long] = None) extends  ServerCmd
-case class GetCmd(key: String) extends  ServerCmd
-case class CasCmd(key: String, payload: ByteString, checksum: String) extends  ServerCmd
+case class SetCmd(key: ByteString,
+                  payload: ByteString,
+                  cas: Long) extends  ServerCmd
+case class GetCmd(key: ByteString) extends  ServerCmd
 case class DeleteCmd(key: String) extends  ServerCmd
+case object VersionCmd extends ServerCmd
 
