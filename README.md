@@ -80,3 +80,7 @@ In the current implementation the following fields of the protocol are ignored: 
     
 ### Limitations
 * There is no concept of backpressure at the moment:  
+
+## Resources
+* [Memached Internals](https://www.adayinthelifeof.nl/2011/02/06/memcache-internals/)
+* [Memcached Source Code](https://github.com/memcached/memcached)
