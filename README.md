@@ -64,7 +64,7 @@ The [binary protocol](https://cloud.github.com/downloads/memcached/memcached/pro
 1. Set (With support for the CAS field).
 2. Delete.
 3. Get.
-4. Version
+4. Version. (This implemented just to make things easier to test, some memcached clients fetch the version after connecting to the server). 
 
 In the current implementation the following fields of the protocol are ignored: **Expiration, Opaque and flags.**
 
