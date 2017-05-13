@@ -21,12 +21,18 @@ object BinaryProtocolHelpers {
     cas = 0
   ).toByteString ++ ByteString("1.3.1".getBytes())
 
-  def buildErrorResponse(status: ResponseStatus, opcode: Opcode): ByteString = {
+  def buildSetResponse(cas: Long): ByteString =
+    ResponseHeader(Set, 0, 0, NoError, 0, 0, cas).toByteString
+
+  def buildErrorResponse(status: ResponseStatus, requestOpcode: Opcode): ByteString = {
     val msgBytes = ByteString(status.msg.getBytes)
-    ResponseHeader(opcode, 0, 0, status, msgBytes.size, 0, 0).toByteString ++ msgBytes
+    ResponseHeader(requestOpcode, 0, 0, status, msgBytes.size, 0, 0).toByteString ++ msgBytes
   }
 
-  def buildGetRequestResponse(opaque: Long, payload: ByteString, cas: Long): ByteString =
+  def buildGetRequestResponse(opaque: Long,
+                              payload: ByteString,
+                              cas: Long,
+                              flags: ByteString): ByteString =
     ResponseHeader(
       opcode = Get,
       keyLength = 0,
@@ -35,7 +41,7 @@ object BinaryProtocolHelpers {
       totalBodyLength  = payload.size + 4,
       opaque = opaque,
       cas = cas
-    ).toByteString ++ ByteString(Array(0xde.toByte,0xad.toByte,0xbe.toByte, 0xef.toByte)) ++ payload
+    ).toByteString ++ flags ++ payload
 
   def parseServerCmd(request: RequestHeader, payload: ByteString): Try[ServerCmd] = {
     request.opcode match {
@@ -44,10 +50,11 @@ object BinaryProtocolHelpers {
       case Get => Success(GetCmd(payload.slice(24 + request.extrasLength,24 + request.extrasLength + request.keyLength)))
       case Set =>
         val key = payload.slice(24 + request.extrasLength, 24 + request.extrasLength + request.keyLength)
+        val flags = payload.slice(24, 28)
         val value = payload.slice(
           24 + request.extrasLength + request.keyLength,
           24 + request.totalBodyLength.toInt)
-        Success(SetCmd(key, value, request.cas))
+        Success(SetCmd(key, value, request.cas, flags))
       case Version => Success(VersionCmd)
       case _ => Failure(new RuntimeException("Unsupported Command"))
     }

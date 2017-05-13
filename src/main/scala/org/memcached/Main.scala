@@ -1,5 +1,6 @@
 package org.memcached
 import akka.actor.ActorSystem
+import org.memcached.cache.Bucket
 import org.memcached.tcp.TcpServer
 
 object Main {
@@ -7,6 +8,7 @@ object Main {
     implicit val actorSystem       = ActorSystem("memcached-actor-system")
     implicit val executor          = actorSystem.dispatcher
     sys.addShutdownHook(actorSystem.terminate())
-    TcpServer.actorOf()
+    lazy val cache = Bucket.actorOf(1024*1024)
+    TcpServer.actorOf(cache)
   }
 }

@@ -11,7 +11,8 @@ trait ServerCmd
 
 case class SetCmd(key: ByteString,
                   payload: ByteString,
-                  cas: Long) extends  ServerCmd
+                  cas: Long,
+                  flags: ByteString) extends  ServerCmd
 case class GetCmd(key: ByteString) extends  ServerCmd
 case class DeleteCmd(key: String) extends  ServerCmd
 case object VersionCmd extends ServerCmd

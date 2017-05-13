@@ -6,7 +6,7 @@ import akka.actor.{Actor, ActorLogging, ActorRef, ActorRefFactory, Props}
 import akka.io.{IO, Tcp}
 
 
-class TcpServer extends Actor with ActorLogging {
+class TcpServer(cache: ActorRef) extends Actor with ActorLogging {
 
   import akka.io.Tcp._
   import context.system
@@ -24,7 +24,7 @@ class TcpServer extends Actor with ActorLogging {
     case Connected(remote, _) =>
       log.debug(s"New connection accepted for ${remote.getAddress}:${remote.getPort}")
       val connection = sender()
-      val handler = CommandHandler.actorOf(connection)(context)
+      val handler = CommandHandler.actorOf(connection, cache)(context)
       connection ! Register(handler)
     case unhandled =>
       log.error(s"Unhandled message received: $unhandled")
@@ -32,10 +32,10 @@ class TcpServer extends Actor with ActorLogging {
 }
 
 object TcpServer {
-  private [memcached] def actorOf()(implicit actorRefFactory: ActorRefFactory):ActorRef =
-    actorRefFactory.actorOf(props(), name)
+  private [memcached] def actorOf(cache: ActorRef)(implicit actorRefFactory: ActorRefFactory):ActorRef =
+    actorRefFactory.actorOf(props(cache), name)
 
-  private[memcached] def props(): Props = Props(classOf[TcpServer])
+  private[memcached] def props(cache: ActorRef): Props = Props(classOf[TcpServer], cache)
 
   private [memcached] def name = "tcp-server-actor"
 }
