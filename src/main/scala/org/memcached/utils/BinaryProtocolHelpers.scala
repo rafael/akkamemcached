@@ -1,7 +1,7 @@
 package org.memcached.utils
 
 import akka.util.ByteString
-import org.memcached.types.{GetCmd, ServerCmd, SetCmd, VersionCmd}
+import org.memcached.types._
 import org.memcached.types.protocol._
 
 import scala.util.{Failure, Success, Try}
@@ -21,8 +21,8 @@ object BinaryProtocolHelpers {
     cas = 0
   ).toByteString ++ ByteString("1.3.1".getBytes())
 
-  def buildSetResponse(cas: Long): ByteString =
-    ResponseHeader(Set, 0, 0, NoError, 0, 0, cas).toByteString
+  def buildResponseNoBody(opd: Opcode, cas: Long): ByteString =
+    ResponseHeader(opd, 0, 0, NoError, 0, 0, cas).toByteString
 
   def buildErrorResponse(status: ResponseStatus, requestOpcode: Opcode): ByteString = {
     val msgBytes = ByteString(status.msg.getBytes)
@@ -56,6 +56,9 @@ object BinaryProtocolHelpers {
           24 + request.totalBodyLength.toInt)
         Success(SetCmd(key, value, request.cas, flags))
       case Version => Success(VersionCmd)
+      case Delete =>
+        val key = payload.slice(24 + request.extrasLength, 24 + request.extrasLength + request.keyLength)
+        Success(DeleteCmd(key))
       case _ => Failure(new RuntimeException("Unsupported Command"))
     }
   }

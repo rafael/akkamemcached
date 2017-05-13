@@ -35,7 +35,7 @@ class CommandHandler(connection: ActorRef, cache: ActorRef) extends Actor with A
           cache.tell(cmd, originalSender)
         case Failure(error) =>
           log.error(error, "Un-parsable command received")
-          sender() ! buildErrorResponse(UnknownCommand, Get)
+          sender() ! Write(buildErrorResponse(UnknownCommand, Get))
       }
     case PeerClosed =>
       log.debug("Connection closed")

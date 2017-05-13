@@ -14,6 +14,6 @@ case class SetCmd(key: ByteString,
                   cas: Long,
                   flags: ByteString) extends  ServerCmd
 case class GetCmd(key: ByteString) extends  ServerCmd
-case class DeleteCmd(key: String) extends  ServerCmd
+case class DeleteCmd(key: ByteString) extends  ServerCmd
 case object VersionCmd extends ServerCmd
 
