@@ -11,7 +11,7 @@ class TcpServer(cache: ActorRef) extends Actor with ActorLogging {
   import akka.io.Tcp._
   import context.system
 
-  IO(Tcp) ! Bind(self, new InetSocketAddress("localhost", 11211))
+  IO(Tcp) ! Bind(self, new InetSocketAddress("0.0.0.0", 11211))
 
   def receive = {
     case Bound(localAddress) =>
