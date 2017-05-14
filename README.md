@@ -66,7 +66,7 @@ The [binary protocol](https://cloud.github.com/downloads/memcached/memcached/pro
 3. Get.
 4. Version. (This implemented just to make things easier to test, some memcached clients fetch the version after connecting to the server). 
 
-In the current implementation the following fields of the protocol are ignored: **Expiration, Opaque and flags.**
+In the current implementation the following fields of the protocol are ignored: **Expiration, Opaque.**
 
 ## Discussion
 
@@ -84,3 +84,4 @@ In the current implementation the following fields of the protocol are ignored: 
 ## Resources
 * [Memached Internals](https://www.adayinthelifeof.nl/2011/02/06/memcache-internals/)
 * [Memcached Source Code](https://github.com/memcached/memcached)
+* [Memcached Benchmark Tool](https://redislabs.com/blog/memtier_benchmark-a-high-throughput-benchmarking-tool-for-redis-memcached/)
