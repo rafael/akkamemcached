@@ -46,7 +46,6 @@ object BinaryProtocolHelpers {
   def parseServerCmd(request: RequestHeader, payload: ByteString): Try[ServerCmd] = {
     request.opcode match {
       //  Get command doesn't have anything in Extras area
-      // Todo: Think about the body length
       case Get => Success(GetCmd(payload.slice(24 + request.extrasLength,24 + request.extrasLength + request.keyLength)))
       case Set =>
         val key = payload.slice(24 + request.extrasLength, 24 + request.extrasLength + request.keyLength)
@@ -66,7 +65,8 @@ object BinaryProtocolHelpers {
   def byteStringToLong(bytes: ByteString):Long =
     (bytes.size-1 to 0 by -1).foldLeft(0L) { (acc, i) =>
       // we shift each byte 8 bits to the left to add it
-      // at the proper place
+      // at the proper place. We also apply a mask because
+      // by default bytes are signed in Java.
       acc | ((bytes(i) & 0xFF) << (bytes.size-1-i) * 8)
     }
 

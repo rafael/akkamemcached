@@ -4,6 +4,8 @@ import java.net.InetSocketAddress
 
 import akka.actor.{Actor, ActorLogging, ActorRef, ActorRefFactory, Props}
 import akka.io.{IO, Tcp}
+import com.typesafe.config.ConfigFactory
+import org.memcached.utils.ServerConfig
 
 
 class TcpServer(cache: ActorRef) extends Actor with ActorLogging {
@@ -11,7 +13,7 @@ class TcpServer(cache: ActorRef) extends Actor with ActorLogging {
   import akka.io.Tcp._
   import context.system
 
-  IO(Tcp) ! Bind(self, new InetSocketAddress("0.0.0.0", 11211))
+  IO(Tcp) ! Bind(self, new InetSocketAddress("0.0.0.0", ServerConfig.port))
 
   def receive = {
     case Bound(localAddress) =>

@@ -17,7 +17,7 @@ case class Node[A,B](key: A,
                      var pre: Option[Node[A,B]] = None,
                      var next: Option[Node[A,B]] = None)
 
-case class Lru[A,B](maxCacheSizeBytes: Long, maxItemSizeBytes: Long, var currentSize: Long = 0L)(implicit sizer: SizeInBytes[B]) {
+case class Lru[A,B](maxCacheSizeBytes: Long, itemMaxSizeInBytes: Long, var currentSize: Long = 0L)(implicit sizer: SizeInBytes[B]) {
   var hash: mutable.HashMap[A, Node[A,B]] = new mutable.HashMap()
   var tailOpt:Option[Node[A,B]] = None
   var headOpt:Option[Node[A,B]] = None
@@ -35,20 +35,20 @@ case class Lru[A,B](maxCacheSizeBytes: Long, maxItemSizeBytes: Long, var current
 
   def set(key: A, value: B): Unit = {
     (hash.get(key), tailOpt) match {
-      case (Some(oldValue), _) if sizer.size(value) <= maxItemSizeBytes =>
+      case (Some(oldValue), _) if sizer.size(value) <= itemMaxSizeInBytes =>
         currentSize -= sizer.size(oldValue.value)
         oldValue.value = value
         remove(oldValue)
         setHead(oldValue)
         cleanCache(sizer.size(value))
         currentSize += sizer.size(value)
-      case (None, Some(_)) if sizer.size(value) <= maxItemSizeBytes =>
+      case (None, Some(_)) if sizer.size(value) <= itemMaxSizeInBytes =>
         val newNode = Node(key, value)
         cleanCache(sizer.size(value))
         currentSize += sizer.size(value)
         setHead(newNode)
         hash.put(key, newNode)
-      case (None, None) if sizer.size(value) <= maxItemSizeBytes =>
+      case (None, None) if sizer.size(value) <= itemMaxSizeInBytes =>
         val newNode = Node(key, value)
         currentSize += sizer.size(value)
         setHead(newNode)

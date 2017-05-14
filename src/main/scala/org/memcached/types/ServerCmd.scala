@@ -8,7 +8,6 @@ import akka.util.ByteString
 
 trait ServerCmd
 
-
 case class SetCmd(key: ByteString,
                   payload: ByteString,
                   cas: Long,
