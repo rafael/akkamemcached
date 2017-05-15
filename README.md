@@ -25,7 +25,7 @@ client.set("a", 1)
 client.cas("a") { |v| v + 1 }
 #=> 2
 ```
-Also, as another Dockerfile, a script is provided that contains tests. It tries similar operations as above, but also creates threads and performs concurrent operations to validate that **CAS** operations are working as expected. You can run them like this:
+Also, as another Dockerfile, a script is provided that contains integration tests. It tries similar operations as above, but also creates threads and performs concurrent operations to validate that **CAS** operations are working as expected. You can run them like this:
 
 ```bash
 docker-compose up tests
