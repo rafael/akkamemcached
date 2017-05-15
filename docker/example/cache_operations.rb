@@ -53,7 +53,7 @@ valid_response = num_threads * iterations
 puts "Going to start #{num_threads} threads. Each thread will call incr #{iterations} times. By the end of the loop, the counter should have the value #{valid_response} if it's being atomic."
 
 # Initialize counter
-client.set("incr", 0) # => 1
+client.set("incr", 0)
 
 # Set the threads going
 threads = []

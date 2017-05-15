@@ -7,10 +7,11 @@ import org.memcached.utils.ServerConfig
 
 object Main {
   def main(args: Array[String]) {
-    implicit val actorSystem       = ActorSystem("memcached-actor-system")
-    implicit val executor          = actorSystem.dispatcher
+    implicit val actorSystem = ActorSystem("memcached-actor-system")
     sys.addShutdownHook(actorSystem.terminate())
+    // Creates the cache actor
     lazy val cache = Bucket.actorOf(ServerConfig.cacheSize)
+    // Starts TCP server
     TcpServer.actorOf(cache)
   }
 }

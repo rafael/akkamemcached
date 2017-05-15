@@ -113,7 +113,7 @@ class Bucket(maxSizeInBytes: Long) extends Actor with ActorLogging {
 
   private def setCmd(key: ByteString, value: ByteString, flags: ByteString) = {
     cache.set(key, CacheValue(value, 1, flags))
-    log.debug("SetCmd processed")
+    log.debug(s"SetCmd processed new cache size: ${cache.currentSize}")
     sender ! Write(buildResponseNoBody(Get, cas = 1))
   }
 }
