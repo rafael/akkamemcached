@@ -4,7 +4,7 @@ import java.util.concurrent.atomic.AtomicInteger
 
 import akka.actor.{Actor, ActorLogging, ActorRef, ActorRefFactory, Props}
 import akka.util.ByteString
-import org.memcached.types.caches.{Lru, SizeInBytes}
+import org.memcached.types.{Lru, SizeInBytes}
 import org.memcached.types.{DeleteCmd, GetCmd, SetCmd}
 import org.memcached.types.protocol._
 import org.memcached.utils.BinaryProtocolHelpers._
@@ -15,7 +15,6 @@ case class CacheValue(value: ByteString, cas: Long, flags: ByteString)
 class Bucket(maxSizeInBytes: Long) extends Actor with ActorLogging {
 
   import akka.io.Tcp._
-
 
   implicit object Sizer extends SizeInBytes[CacheValue] {
     def size(x: CacheValue ): Int = x.value.size
