@@ -4,6 +4,33 @@ The following documentation contains instructions to run the project, design dec
 
 This project was developed as part of the interview process at [Slack](https://slack.com) with the requirements defined in [here](https://slack-files.com/T12KS1G65-F3RUY3WJU-abf35e46b2).
 
+## tl; dr
+
+Here a quick set of instructions to just get started and test the project. If you have Docker, the project providers a docker-compose file that you can use to start the server:
+
+```bash
+$ CACHE_SIZE=10000 docker-compose up memcached
+```
+This will try to bound to the default memcached port (11211). Once it builds and starts, you can use any client that supports binary protocol. Here an example using ruby:
+```ruby
+require 'dalli'
+client = Dalli::Client.new('localhost:11211')
+client.set("a", "1")
+# => 1
+client.get("a", "1")
+# => 1
+client.delete("a")
+=> true
+client.set("a", 1)
+client.cas("a") { |v| v + 1 }
+=> 2
+```
+Also, as another Dockerfile, a script is provided that contains tests. It tries similar operations as above, but also creates threads and performs concurrent operations to validate that **CAS** operations are working as expected. You can run them like this:
+
+```bash
+docker-compose up tests
+```
+
 ## Design
 
 This implementation of Memcached leverages Akka Actor System and non blocking IO TCP connections to provide
