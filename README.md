@@ -10,9 +10,9 @@ This implementation of Memcached leverages Akka Actor System and non blocking IO
 a high throughput Cache server. 
 
 ### Main Components
-1. **Tcp Connection Creator**: This a singleton actor that it's only responsability is establishing the connection with the client, assigning and connection and spun a Command Handler actor that will handle all the interactions with the client.
+1. **Tcp Connection Creator**: This a singleton actor that it's only responsability is establishing the connection with the client, assigning and connection and  creates a Command Handler actor that will handle all the interactions with the client. 
 2. **Command Handler**: This actor is responsible for accepting and parsing commands from the clients. Once a command has been parsed, the work is delegated to a cache actor that will fulfill the command.
-3. **LRU Cache**: There will be one LRU Cache for the whole application. The max size will be value provided at start. This actor handles the consistency of the Cache and performs the supported operations. Once, the operation have been performed in the caches, it delegates sending the response back to the client to the connection actor. 
+3. **LRU Cache**: There will be one LRU Cache for the whole application. The max size will be the value provided as parameter to the application at start. This actor handles the consistency of the Cache and performs the supported operations. Once, the operation have been performed in the caches, it delegates sending the response back to the client to the connection actor. 
     
 The following diagram, ilustrates how this components fit together in the design.
 
@@ -50,8 +50,9 @@ Once the client has an open connection with the server, a normal flow for a comm
     |                           |
     |                           |
     |                           |
-    |                           |
-    +---------+GET-Response+----+
+    |                    +------v------+
+    +--+GET+Response+----+ Connection  |
+                         +-------------+
 
 ```
 
