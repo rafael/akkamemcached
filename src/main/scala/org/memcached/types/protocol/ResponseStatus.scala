@@ -17,7 +17,7 @@ case object NoError extends  ResponseStatus {
 // 0x0001  Key not found
 case object KeyNotFound extends  ResponseStatus {
   override val code = 0x1
-  override val msg = "Key not found"
+  override val msg = "Not found"
 
 }
 // 0x0002  Key exists

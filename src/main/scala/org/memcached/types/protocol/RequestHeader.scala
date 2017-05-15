@@ -61,7 +61,7 @@ case class RequestHeader(
     longToByteString(reserved,       2) ++
     longToByteString(totalBodyLength,4) ++
     longToByteString(opaque,         4) ++
-    longToByteString(cas,            4)
+    longToByteString(cas,            4).reverse
   }
 }
 
@@ -74,7 +74,8 @@ object RequestHeader {
     val reserved: Int = byteStringToLong(data.slice(6,8)).toInt
     val totalBodyLength: Long = byteStringToLong(data.slice(8,12))
     val opaque: Long = byteStringToLong(data.slice(12,16))
-    val cas: Long = byteStringToLong(data.slice(16,24))
+    // See comment in ResponseHeader for explanation why, I'm reversing this.
+    val cas: Long = byteStringToLong(data.slice(16,24).reverse)
     for {
       magic <- magicTry
       opcode <- opcodeTry
