@@ -45,14 +45,22 @@ puts "Starting test, setting, fetching and deleting a value"
 random_test # => nil
 puts "First test finished"
 puts "Starting test for CAS"
-puts "Going to start 4 threads. Each threads will call incr 10 time. By the end of the loop, the counter should have the value 40 if it's being atomic."
+
+num_threads = (ENV['NUM_THREADS'] || 4).to_i
+iterations = (ENV['NUM_ITERATIONS'] || 10).to_i
+valid_response = num_threads * iterations
+
+puts "Going to start #{num_threads} threads. Each thread will call incr #{iterations} times. By the end of the loop, the counter should have the value #{valid_response} if it's being atomic."
+
+# Initialize counter
 client.set("incr", 0) # => 1
+
 # Set the threads going
 threads = []
-4.times.each { |thing|
-  thread = Thread.new(thing) do 
+num_threads.times.each { |n|
+  thread = Thread.new(n) do
     thread_client = client
-    10.times.each do
+    iterations.times.each do
       bump_counter("incr", thread_client)
     end
   end
@@ -65,5 +73,5 @@ threads.each { |thread|
 }
 
 final_count = client.get('incr')
-raise "Error: CAS didn't guarantee isolation: It should be eq to 40, got #{final_count}" if final_count != 40
-puts "The final value of the counter: incr is #{client.get('incr')}"
+raise "Error: CAS didn't guarantee isolation: It should be eq to #{valid_response}, got #{final_count}" if final_count != valid_response
+puts "The final value of the counter: incr is #{final_count}"
