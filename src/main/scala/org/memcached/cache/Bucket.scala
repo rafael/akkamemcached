@@ -4,13 +4,11 @@ import java.util.concurrent.atomic.AtomicInteger
 
 import akka.actor.{Actor, ActorLogging, ActorRef, ActorRefFactory, Props}
 import akka.util.ByteString
-import com.typesafe.config.ConfigFactory
 import org.memcached.types.caches.{Lru, SizeInBytes}
 import org.memcached.types.{DeleteCmd, GetCmd, SetCmd}
 import org.memcached.types.protocol._
 import org.memcached.utils.BinaryProtocolHelpers._
 import org.memcached.utils.ServerConfig
-
 
 case class CacheValue(value: ByteString, cas: Long, flags: ByteString)
 

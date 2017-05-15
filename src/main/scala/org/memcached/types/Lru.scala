@@ -1,17 +1,10 @@
-package org.memcached.types.caches
-
-import akka.util.ByteString
-import org.scalatest.prop.Configuration.MaxSize
+package org.memcached.types
 
 import scala.collection.mutable
 
 /**
   * Created by rafael on 5/12/17.
   */
-abstract class SizeInBytes[A] {
-  def size(x: A): Int
-}
-
 case class Node[A,B](key: A,
                      var value: B,
                      var pre: Option[Node[A,B]] = None,
@@ -40,7 +33,7 @@ case class Lru[A,B](maxCacheSizeBytes: Long, itemMaxSizeInBytes: Long)(implicit 
     * @param key
     * @return
     */
-  def get(key: A): Option[B] = {
+  def get(key: A): Option[B] =
     hash.get(key) match {
       case Some(node) =>
         updateList(node)
@@ -48,15 +41,13 @@ case class Lru[A,B](maxCacheSizeBytes: Long, itemMaxSizeInBytes: Long)(implicit 
       case None =>
         None
     }
-  }
-
   /**
     * Sets a key in the LRU
     * @param key to set
     * @param value to set
     */
 
-  def set(key: A, value: B): Unit = {
+  def set(key: A, value: B): Unit =
     hash.get(key) match {
       case Some(oldValue) if sizer.size(value) <= itemMaxSizeInBytes =>
         currentSize -= sizer.size(oldValue.value)
@@ -73,15 +64,12 @@ case class Lru[A,B](maxCacheSizeBytes: Long, itemMaxSizeInBytes: Long)(implicit 
       case _ =>
         throw new RuntimeException("Attempting to insert an item that is bigger than max allowed size")
     }
-  }
-
   /**
     * Deletes key from cache. Returns false if the key was not found
     * @param key
     * @return
     */
-
-  def delete(key: A): Boolean = {
+  def delete(key: A): Boolean =
     hash.get(key) match {
       case Some(node) =>
         currentSize -= sizer.size(node.value)
@@ -90,7 +78,6 @@ case class Lru[A,B](maxCacheSizeBytes: Long, itemMaxSizeInBytes: Long)(implicit 
         true
       case _ => false
     }
-  }
 
   private def updateList(node: Node[A, B]) = {
     remove(node)
@@ -118,7 +105,7 @@ case class Lru[A,B](maxCacheSizeBytes: Long, itemMaxSizeInBytes: Long)(implicit 
       tailOpt = node.pre
   }
 
-  private def cleanCache(newValueSize: Int) = {
+  private def cleanCache(newValueSize: Int) =
     // This is nasty, but this method should never be called  if there is no tail,
     // so it's safe to assume that it will always be there.
     while (currentSize + newValueSize > maxCacheSizeBytes) {
@@ -126,5 +113,13 @@ case class Lru[A,B](maxCacheSizeBytes: Long, itemMaxSizeInBytes: Long)(implicit 
      hash.remove(tailOpt.get.key)
      remove(tailOpt.get)
     }
-  }
+}
+
+/**
+  * This is used to provide generic type value keys. It's important for the cache to know
+  * the size of the values. This class provides an interface to define that.
+  * @tparam A
+  */
+abstract class SizeInBytes[A] {
+  def size(x: A): Int
 }

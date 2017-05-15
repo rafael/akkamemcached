@@ -8,6 +8,7 @@ import akka.util.ByteString
 
 trait ServerCmd
 
+// Types for the supported operations by the server.
 case class SetCmd(key: ByteString,
                   payload: ByteString,
                   cas: Long,

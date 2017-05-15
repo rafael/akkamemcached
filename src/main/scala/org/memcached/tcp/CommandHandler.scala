@@ -22,6 +22,8 @@ class CommandHandler(connection: ActorRef, cache: ActorRef) extends Actor with A
   context watch connection
 
   def receive = {
+    // This is the data coming from the TCP socket. Trying to parse as a binary Memcached
+    // command
     case Received(data) =>
       log.debug(s"Received the following data: ${data.toString()}")
       val requestHeaderTry = RequestHeader(data.slice(0,24))
@@ -52,7 +54,7 @@ class CommandHandler(connection: ActorRef, cache: ActorRef) extends Actor with A
       // Value length exceeded rejecting request,
       case Success(requestHeader) if requestHeader.opcode == Set && requestHeader.totalBodyLength - requestHeader.extrasLength - requestHeader.keyLength > ServerConfig.itemMaxSize =>
         log.info("Invalid item size")
-        sender() ! Write(buildErrorResponse(InvalidArguments, requestHeader.opcode))
+        sender() ! Write(buildErrorResponse(ValueTooLarge, requestHeader.opcode))
       case Success(requestHeader) =>
         parseCommand(data, requestHeader)
       case Failure(error) =>

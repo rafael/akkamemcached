@@ -18,11 +18,9 @@ class TcpServer(cache: ActorRef) extends Actor with ActorLogging {
   def receive = {
     case Bound(localAddress) =>
       log.info(s"Successfully bound to ${localAddress.getAddress}:${localAddress.getPort}")
-
     case CommandFailed(_: Bind) =>
       log.error("Fatal error, couldn't bind to port")
       context stop self
-
     case Connected(remote, _) =>
       log.debug(s"New connection accepted for ${remote.getAddress}:${remote.getPort}")
       val connection = sender()
