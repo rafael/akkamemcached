@@ -1,7 +1,6 @@
 package org.memcached.types
 
 import akka.util.ByteString
-import org.memcached.types.caches.{Lru, SizeInBytes}
 import org.specs2.mutable.Specification
 
 /**

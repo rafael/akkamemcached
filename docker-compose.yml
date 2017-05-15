@@ -1,0 +1,14 @@
+version: '2'
+services: 
+  memcached:
+    build: .
+    ports:
+      - "11211:11211"
+  tests:
+    build:
+      context: ./docker/example
+      dockerfile: Dockerfile
+    environment:
+      - USE_DOCKER="true"
+    links:
+      - memcached
