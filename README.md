@@ -12,29 +12,26 @@ a high throughput Cache server.
 ### Main Components
 1. **Tcp Connection Creator**: This a singleton actor that it's only responsability is establishing the connection with the client, assigning and connection and spun a Command Handler actor that will handle all the interactions with the client.
 2. **Command Handler**: This actor is responsible for accepting and parsing commands from the clients. Once a command has been parsed, the work is delegated to a consistent hashing router that will delegate the work of perfoming the request to a given LRU Cache Bucket. It is guarantee that subsequent requests for the same key, will be handled by the same Cache Bucket.
-3. **LRU Cache**: 
-    1. There will be N Cache buckets. 
-    2. The numbers of buckets is defined by configuration. This will shard the keyspace and divide the load for the request among different actors. 
-    3. The total capacity of the cache is divided evenly among the number of buckets.
+3. **LRU Cache**: There will be one LRU Cache for the whole application. The max size, will be value provided at start. 
     
 The following diagram, ilustrates how this components fit together in the design.
 
 ```
 
-                                  +--------------------+                      +--------------------+
-                                  | Command Handler 1  +--+                   | LRU Cache          |
-                                  +--------------------+  |                   | +----------------+ |
-                                                          |  +------------+   | | Cache Bucket 1 | |
- +----------------+                                       +-->            |   | +----------------+ |
- |                |               +--------------------+     |            |   | +----------------+ |
- |TCP Conn Creator+-- Creates --> | Command Handler 2  +-----> C.H Router |-->| | Cache Bucket 2 | |
- |                |               +--------------------+     |            |   | +----------------+ |
- +----------------+                         .             +-->            |   |         .          |
-                                            .             |  +------------+   |         .          |
-                                  +--------------------+  |                   | +----------------+ |
-                                  | Command Handler N  +--+                   | | Cache Bucket N | |
-                                  +--------------------+                      | +----------------+ |
-                                                                              +--------------------+
+                                  +--------------------+            +--------------------+
+                                  | Command Handler 1  +--+         | LRU Cache          |
+                                  +--------------------+  |         |                    |
+                                                          |         |                    |
+ +----------------+                                       +--------->                    |
+ |                |               +--------------------+            |                    |
+ |TCP Conn Creator+-+ Creates +-> | Command Handler 2  +------------>                    |
+ |                |               +--------------------+            |                    |
+ +----------------+                         .             +--------->                    |
+                                            .             |         |                    |
+                                  +--------------------+  |         |                    |
+                                  | Command Handler N  +--+         |                    |
+                                  +--------------------+            |                    |
+                                                                    +--------------------+
 
 ```
 
@@ -44,17 +41,18 @@ Once the client has an open connection with the server, a normal flow for a comm
 +--------+
 |        |               +-------------+
 | Client +--+ GET(a) +-> | CMD Handler |
-|        |               +------+------+    +----------------+
-+---+----+                      |           | Cache Bucket 1 |
-    ^                           |           +----------------+
-    |                    +------v-----+     +----------------+
-    |                    | C.H Router +-+   | Cache Bucket 2 |
-    |                    +------------+ |   +----------------+
-    |                                   |   +----------------+
-    |                                   +---> Cache Bucket N |
-    |                                       +--------+-------+
-    |                                                |
-    +-------------------GET Response-----------------+
+|        |               +------+------+
++---+----+                      |
+    ^                           |
+    |                       +---v----+
+    |                       | Cache  |
+    |                       +---+----+
+    |                           |
+    |                           |
+    |                           |
+    |                           |
+    +---------+GET-Response+----+
+
 ```
 
 ### Protocol
