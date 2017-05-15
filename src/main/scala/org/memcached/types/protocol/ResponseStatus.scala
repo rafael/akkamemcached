@@ -4,6 +4,7 @@ package org.memcached.types.protocol
   * Created by rafael on 5/9/17.
   */
 
+// Types to represent response statutes
 sealed trait ResponseStatus {
   def code: Int
   def msg: String

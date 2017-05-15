@@ -19,6 +19,11 @@ case object RequestPacketMagic extends  MagicValue {
 }
 
 object MagicValue {
+  /**
+    * Constructs a magic value from Int value.
+    * @param magicValue int value
+    * @return
+    */
   def apply(magicValue: Int): Try[MagicValue] = {
     if (magicValue == RequestPacketMagic.code)
       Success(RequestPacketMagic)

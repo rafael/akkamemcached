@@ -60,11 +60,9 @@ case class ResponseHeader(
     longToByteString(status.code,    2) ++
     longToByteString(totalBodyLength,4) ++
     longToByteString(opaque,         4) ++
-    // This is the only part I can't find any docs why
-    // and didn't find it in memcached source. However,
-    // at least in ruby implementation of the protocol
-    // it processes the CAS value as native endian, instead
-    // of bid endian.
+    // This seems like a hack, but it works. I couldn't find anything in the docs or in memcached code that validates
+    // why this should be this way. At least in ruby implementation of the protocol it processes the CAS value as
+    // native endian instead of big endian. So if I don't reverse the bytes here thigns funky
     // Here the mask that the client is implementing:
     // @4CCnNNQ
     // Reference for this could be found here:

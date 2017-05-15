@@ -79,6 +79,8 @@ case class Lru[A,B](maxCacheSizeBytes: Long, itemMaxSizeInBytes: Long)(implicit 
       case _ => false
     }
 
+  // This moves a node to the head by removing it from it's current location and setting as head.
+  // This could happen when getting a key or setting a key that already existed in the cache.
   private def updateList(node: Node[A, B]) = {
     remove(node)
     setHead(node)
@@ -94,6 +96,7 @@ case class Lru[A,B](maxCacheSizeBytes: Long, itemMaxSizeInBytes: Long)(implicit 
       tailOpt = headOpt
   }
 
+  // Removes node from the list
   private def remove(node: Node[A,B]): Unit = {
     if (node.pre.isDefined)
       node.pre.get.next = node.next
@@ -105,6 +108,8 @@ case class Lru[A,B](maxCacheSizeBytes: Long, itemMaxSizeInBytes: Long)(implicit 
       tailOpt = node.pre
   }
 
+  // Clean the cache if the new value will go beyond the max supported value
+  // This could delete more than one element depending on the size of the new element.
   private def cleanCache(newValueSize: Int) =
     // This is nasty, but this method should never be called  if there is no tail,
     // so it's safe to assume that it will always be there.

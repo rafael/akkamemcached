@@ -30,6 +30,11 @@ case object Version extends Opcode {
 }
 
 object Opcode {
+  /**
+    * Constructs an opcode from an integer value
+    * @param value integer value for an operation
+    * @return
+    */
   def apply(value: Int):Try[Opcode] =
     value match {
       case Get.code => Success(Get)

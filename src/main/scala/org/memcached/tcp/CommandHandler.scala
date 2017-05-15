@@ -15,11 +15,23 @@ import scala.util.{Failure, Success, Try}
   * Created by rafael on 5/9/17.
   */
 
-class CommandHandler(connection: ActorRef, cache: ActorRef) extends Actor with ActorLogging {
+class CommandHandler(cache: ActorRef) extends Actor with ActorLogging {
 
   import akka.io.Tcp._
 
-  context watch connection
+  // Watch the sender (i.e connection)
+  context watch sender
+
+  /**
+    * The responsibility of this actor is to receive messages from the connection actor. It validated the data that came
+    * in the wire. Parses the command and if it's successful, delegates the responsibility of fulfilling the command to
+    * the cache actor.
+    * These actor could receive the following messages of messages that can be received:
+    *  Received(data): Raw ByteString sent by the client
+    *  PeerClosed: The client closed the connection
+    *  Terminated: We are watching the connection, so if for some reason the connection actor dies, we make sure to clean
+    *  up the state.
+    */
 
   def receive = {
     // This is the data coming from the TCP socket. Trying to parse as a binary Memcached
@@ -78,6 +90,8 @@ class CommandHandler(connection: ActorRef, cache: ActorRef) extends Actor with A
       case Success(cmd) =>
         log.debug(s"Command successfully parsed: $cmd")
         val originalSender = sender()
+        // The message here comes from the connection actor, by using the tell method, we set who the cache should
+        // respond (connection) when it processes the request.
         cache.tell(cmd, originalSender)
       case Failure(error) =>
         log.error(error, "Un-parsable command received")
@@ -89,10 +103,10 @@ class CommandHandler(connection: ActorRef, cache: ActorRef) extends Actor with A
 object CommandHandler {
   private [tcp] val count = new AtomicInteger(0)
 
-  private [memcached] def actorOf(connection: ActorRef, cache: ActorRef)(implicit actorRefFactory: ActorRefFactory):ActorRef =
-    actorRefFactory.actorOf(props(connection, cache), name)
+  private [memcached] def actorOf(cache: ActorRef)(implicit actorRefFactory: ActorRefFactory):ActorRef =
+    actorRefFactory.actorOf(props(cache), name)
 
-  private[memcached] def props(connection: ActorRef, cache: ActorRef): Props = Props(classOf[CommandHandler], connection, cache)
+  private[memcached] def props(cache: ActorRef): Props = Props(classOf[CommandHandler], cache)
 
   private [memcached] def name = s"command-handler-actor-${count.incrementAndGet}"
 }

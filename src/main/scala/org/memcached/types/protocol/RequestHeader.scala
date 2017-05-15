@@ -66,6 +66,11 @@ case class RequestHeader(
 }
 
 object RequestHeader {
+  /**
+    * Constructs a request header from a ByteString
+    * @param data ByteString that contains the request
+    * @return
+    */
   def apply(data: ByteString):Try[RequestHeader] = {
     val magicTry: Try[MagicValue] = MagicValue(byteStringToLong(data.slice(0,1)).toInt)
     val opcodeTry: Try[Opcode] = Opcode(byteStringToLong(data.slice(1,2)).toInt)
