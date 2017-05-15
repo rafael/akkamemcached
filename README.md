@@ -6,12 +6,12 @@ This project was developed as part of the interview process at [Slack](https://s
 
 ## tl; dr
 
-Here a quick set of instructions to just get started and test the project. If you have Docker, the project providers a docker-compose file that you can use to start the server:
+Here a quick set of instructions to just get started and test the project. If you have [Docker](https://www.docker.com), the project provides a **docker-compose** file that you can use to start the server:
 
 ```bash
 $ CACHE_SIZE=10000 docker-compose up memcached
 ```
-This will try to bound to the default memcached port (11211). Once it builds and starts, you can use any client that supports binary protocol. Here an example using ruby:
+This will try to bound to the default memcached port (**11211**). Once it builds and starts, you can use any client that supports binary protocol. Here an example using ruby:
 ```ruby
 require 'dalli'
 client = Dalli::Client.new('localhost:11211')
@@ -25,7 +25,7 @@ client.set("a", 1)
 client.cas("a") { |v| v + 1 }
 #=> 2
 ```
-Also, as another Dockerfile, a script is provided that contains tests. It tries similar operations as above, but also creates threads and performs concurrent operations to validate that **CAS** operations are working as expected. You can run them like this:
+Also, as another Dockerfile, a script is provided that contains integration tests. It tries similar operations as above, but also creates threads and performs concurrent operations to validate that **CAS** operations are working as expected. You can run them like this:
 
 ```bash
 docker-compose up tests
@@ -39,7 +39,7 @@ a high throughput Cache server.
 ### Main Components
 1. **Tcp Connection Creator**: This a singleton actor that it's only responsability is establishing the connection with the client, assigning and connection and  creates a Command Handler actor that will handle all the interactions with the client. 
 2. **Command Handler**: This actor is responsible for accepting and parsing commands from the clients. Once a command has been parsed, the work is delegated to a cache actor that will fulfill the command.
-3. **LRU Cache**: There will be one LRU Cache for the whole application. The max size will be the value provided as parameter to the application at start. This actor handles the consistency of the Cache and performs the supported operations. Once, the operation have been performed in the caches, it delegates sending the response back to the client to the connection actor. 
+3. **LRU Cache**: There will be one LRU Cache for the whole application. The max size will be the value provided as parameter to the application at start. This actor handles the consistency of the Cache and performs the supported operations. Once the operation have been performed in the cache, it delegates sending the response back to the client using the connection actor. 
     
 The following diagram, ilustrates how this components fit together in the design.
 
@@ -62,7 +62,7 @@ The following diagram, ilustrates how this components fit together in the design
 
 ```
 
-Once the client has an open connection with the server, a normal flow for a command will look like this:
+Once the client has an open connection to the server, a normal flow for a command will look like this:
 
 ```
 +--------+
