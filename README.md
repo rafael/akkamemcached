@@ -144,6 +144,7 @@ Both servers were started with a max memory usage of 500 MB.
 The test was run with the following parameters:
 
 ``` bash
+# This will send random payload sizes
 $ memtier_benchmark -n 10000 -s 192.168.0.100 -p 11212 -P memcache_binary -c 50 -R  
 ```
 
