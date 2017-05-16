@@ -1,7 +1,7 @@
 #!/usr/bin/env ruby 
 
 if ENV['USE_DOCKER']
-  `dockerize -wait tcp://memcached:11211 -timeout 120s`
+  `dockerize -wait tcp://memcached:11211 -timeout 360s`
 end
 
 require 'dalli'
