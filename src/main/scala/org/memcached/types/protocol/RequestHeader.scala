@@ -61,7 +61,7 @@ case class RequestHeader(
     longToByteString(reserved,       2) ++
     longToByteString(totalBodyLength,4) ++
     longToByteString(opaque,         4) ++
-    longToByteString(cas,            4).reverse
+    longToByteString(cas,            8).reverse
   }
 }
 
