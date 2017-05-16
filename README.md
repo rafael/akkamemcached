@@ -126,9 +126,10 @@ In the current implementation the following fields of the protocol are ignored: 
   will be related to this areas:
   1. Better isolation of the cache actor compared to all the other actors. It will be interesting to test if 
     having a dedicated thread and dispatcher for this actor yields better performance.
-  2. Divide the full size in different buckets that gives more granularity to the data accessed in the cache (i.e there 
-     could be multiple concurrent keys being accessed at the same time).
-  3. Improve the LRU algorithm, right now it is really naive. 
+  2. Divide the full size of the cache into different buckets to give more granularity to the data accessed in the cache. 
+     In this way there could be multiple concurrent keys being accessed at the same time).
+  3. Improve the LRU algorithm. At the moment the implementation is really simple. But there are other caching strategies
+     and improvements to the algorithm itself that would make the service better.
   4. Fragment the memory depending on the size of the value. Memcached does something similar to this with the use of 
      their slabs. 
     
@@ -148,7 +149,7 @@ The test was run with the following parameters:
 $ memtier_benchmark -n 10000 -s 192.168.0.100 -p 11212 -P memcache_binary -c 50 -R  
 ```
 
-These are the results for Memcached
+These are the results for Memcached:
 
 ```
 4         Threads
