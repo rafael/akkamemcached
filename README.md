@@ -1,9 +1,6 @@
-# Akka Memcached - Slack Interview
+# Akka Memcached
 
 The following documentation contains instructions to run the project, design decisions and future improvements.
-
-This project was developed as part of the interview process at [Slack](https://slack.com) with the requirements 
-defined in [here](https://slack-files.com/T12KS1G65-F3RUY3WJU-abf35e46b2).
 
 ## tl; dr
 
